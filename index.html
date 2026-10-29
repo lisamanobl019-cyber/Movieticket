@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KINOTIME — Билеты в кино</title>
+  <style>
+    /* ================= CSS ================= */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: #0c0b18;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 22px 7%;
+      background: #151326;
+      border-bottom: 1px solid #302744;
+    }
+
+    .logo {
+      color: white;
+      font-size: 25px;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .logo span,
+    .hero h1 span {
+      color: #b49aff;
+    }
+
+    .city {
+      color: #c8c2dc;
+      font-size: 14px;
+    }
+
+    .hero {
+      padding: 75px 8%;
+      background:
+        radial-gradient(ellipse at 85% 20%, #49316d, transparent 48%),
+        linear-gradient(135deg, #1b1731, #0c0b18);
+    }
+
+    .eyebrow {
+      color: #c4b5fd;
+      letter-spacing: 4px;
+      font-size: 12px;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      font-size: clamp(38px, 6vw, 65px);
+      line-height: 1.15;
+      margin-bottom: 20px;
+    }
+
+    .hero p:not(.eyebrow) {
+      color: #c8c2dc;
+      margin-bottom: 30px;
+    }
+
+    .btn {
+      display: inline-block;
+      background: #895cf6;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 14px 20px;
+      font-size: 15px;
+      font-weight: bold;
+      text-decoration: none;
+      cursor: pointer;
+      transition: 0.25s;
+    }
+
+    .btn:hover {
+      background: #a78bfa;
+      transform: translateY(-2px);
+    }
+
+    .container {
+      width: 86%;
+      max-width: 1200px;
+      margin: 55px auto;
+    }
+
+    h2 {
+      font-size: 30px;
+      margin-bottom: 10px;
+    }
+
+    .muted {
+      color: #aaa4c1;
+      margin-bottom: 22px;
+    }
+
+    #search,
+    select {
+      width: 100%;
+      padding: 15px;
+      color: white;
+      background: #19172b;
+      border: 1px solid #39334f;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      outline: none;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 30px;
+    }
+
+    .filter {
+      padding: 10px 17px;
+      color: white;
+      background: #19172b;
+      border: 1px solid #39334f;
+      border-radius: 25px;
+      cursor: pointer;
+    }
+
+    .filter:hover,
+    .filter.active {
+      background: #895cf6;
+    }
+
+    .movie-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 25px;
+    }
+
+    .movie-card {
+      overflow: hidden;
+      background: #171529;
+      border: 1px solid #302744;
+      border-radius: 15px;
+      transition: 0.25s;
+    }
+
+    .movie-card:hover {
+      transform: translateY(-5px);
+      border-color: #895cf6;
+    }
+
+    .movie-poster {
+      display: block;
+      width: 100%;
+      height: 330px;
+      object-fit: cover;
+      background: #29213e;
+    }
+
+    .movie-info {
+      padding: 18px;
+    }
+
+    .movie-info h3 {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    .movie-meta {
+      color: #b9b2ce;
+      font-size: 13px;
+      margin-bottom: 15px;
+    }
+
+    .movie-description {
+      color: #d2cde0;
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 18px;
+    }
+
+    .card-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .details-btn,
+    .book-btn {
+      flex: 1;
+      padding: 11px 8px;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .details-btn {
+      background: #302a48;
+    }
+
+    .book-btn {
+      background: #895cf6;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .booking {
+      padding: 30px;
+      background: #171529;
+      border: 1px solid #302744;
+      border-radius: 18px;
+    }
+
+    .booking label {
+      display: block;
+      margin: 15px 0 8px;
+      color: #d2cde0;
+    }
+
+    .screen {
+      width: 80%;
+      margin: 30px auto;
+      padding: 12px;
+      text-align: center;
+      color: #d8ccff;
+      border-top: 4px solid #a78bfa;
+      border-radius: 50% 50% 0 0;
+      background: #24203a;
+    }
+
+    .seats {
+      display: grid;
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+      gap: 10px;
+      max-width: 500px;
+      margin: 25px auto;
+    }
+
+    .seat {
+      padding: 10px 0;
+      color: white;
+      background: #6544a8;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .seat.selected {
+      background: #c4b5fd;
+      color: #17102b;
+    }
+
+    .seat.occupied {
+      background: #343244;
+      color: #777386;
+      cursor: not-allowed;
+    }
+
+    .legend {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 18px;
+      color: #c7c4d8;
+      font-size: 13px;
+      margin-bottom: 25px;
+    }
+
+    .total {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 20px 0;
+    }
+
+    .total b {
+      color: #c4b5fd;
+    }
+
+    .full {
+      width: 100%;
+    }
+
+    .ticket {
+      margin-top: 25px;
+      padding: 22px;
+      line-height: 1.9;
+      background: #24203a;
+      border: 1px dashed #a78bfa;
+      border-radius: 12px;
+    }
+
+    .ticket h3 {
+      color: #c4b5fd;
+      margin-bottom: 10px;
+    }
+
+    .small {
+      color: #aaa4c1;
+      font-size: 12px;
+      margin-top: 15px;
+    }
+
+    footer {
+      padding: 30px;
+      text-align: center;
+      background: #151326;
+      color: #aaa4c1;
+    }
+
+    footer p {
+      margin-top: 10px;
+    }
+
+    dialog {
+      width: 90%;
+      max-width: 650px;
+      max-height: 90vh;
+      overflow-y: auto;
+      margin: auto;
+      padding: 25px;
+      background: #171529;
+      color: white;
+      border: 1px solid #50436f;
+      border-radius: 16px;
+    }
+
+    dialog::backdrop {
+      background: #000c;
+    }
+
+    .close {
+      display: block;
+      margin-left: auto;
+      margin-bottom: 15px;
+      padding: 8px 12px;
+      background: #302a48;
+      color: white;
+      border: none;
+      border-radius: 7px;
+      cursor: pointer;
+    }
+
+    .detail-poster {
+      display: block;
+      width: 180px;
+      max-width: 100%;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    #movieDetails p {
+      color: #d2cde0;
+      line-height: 1.7;
+      margin: 14px 0;
+    }
+
+    .external-link {
+      display: inline-block;
+      color: #c4b5fd;
+      margin: 10px 0 20px;
+    }
+
+    @media (max-width: 800px) {
+      .movie-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .movie-poster { height: 280px; }
+    }
+
+    @media (max-width: 520px) {
+      .header { padding: 18px 5%; }
+      .logo { font-size: 21px; }
+      .city { font-size: 11px; }
+      .hero { padding: 55px 6%; }
+      .container { width: 90%; }
+      .movie-grid { grid-template-columns: 1fr; }
+      .movie-poster { height: 380px; }
+      .booking { padding: 18px; }
+      .seats { gap: 5px; }
+      .seat { padding: 9px 0; font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <a class="logo" href="#">KINO<span>TIME</span></a>
+    <span class="city">📍 Ош, Кыргызстан</span>
+  </header>
+
+  <section class="hero">
+    <p class="eyebrow">ТВОЙ МИР КИНО</p>
+    <h1>Выбирай фильм.<br><span>Покупай билет.</span></h1>
+    <p>Твои любимые фильмы в одном месте.</p>
+    <a class="btn" href="#movies">Смотреть фильмы →</a>
+  </section>
+
+  <main class="container" id="movies">
+    <h2>Популярные фильмы</h2>
+    <p class="muted">Выбирай, что посмотреть сегодня</p>
+
+    <input id="search" type="search" placeholder="🔎 Поиск фильма...">
+
+    <div class="filters">
+      <button class="filter active" data-genre="Все">Все</button>
+      <button class="filter" data-genre="Драма">Драма</button>
+      <button class="filter" data-genre="Триллер">Триллер</button>
+      <button class="filter" data-genre="Комедия">Комедия</button>
+      <button class="filter" data-genre="Сериал">Сериалы</button>
+    </div>
+
+    <div id="movieList" class="movie-grid"></div>
+    <p id="emptyMessage" class="muted hidden">Фильмы не найдены.</p>
+  </main>
+
+  <section class="container booking" id="booking">
+    <h2>🎟 Бронирование билета</h2>
+    <p class="muted" id="selectedMovie">Сначала выбери фильм в каталоге.</p>
+
+    <label for="cinema">Кинотеатр</label>
+    <select id="cinema">
+      <option>Кинотеатр Ош</option>
+      <option>Кинотеатр Кыргызстан</option>
+      <option>Кинотеатр Ала-Тоо</option>
+    </select>
+
+    <label for="session">Время сеанса</label>
+    <select id="session">
+      <option>12:00</option>
+      <option>15:00</option>
+      <option>18:00</option>
+      <option>21:00</option>
+    </select>
+
+    <div class="screen">ЭКРАН</div>
+    
+    <!-- Контейнер для мест -->
+    <div id="seats" class="seats"></div>
+
+    <div class="legend">
+      <span>🟪 Свободно</span>
+      <span>🟣 Выбрано</span>
+      <span>⬛ Занято</span>
+    </div>
+
+    <div class="total">
+      <span>Мест: <b id="seatCount">0</b></span>
+      <span>Цена: <b id="totalPrice">0</b> сом</span>
+    </div>
+
+    <button id="buyButton" class="btn full">Получить билет</button>
+    <div id="ticket" class="ticket hidden"></div>
+    <p class="small">Учебный проект. Реальная оплата не подключена.</p>
+  </section>
+
+  <footer>
+    <a class="logo" href="#">KINO<span>TIME</span></a>
+    <p>© 2026 KINOTIME</p>
+  </footer>
+
+  <dialog id="movieDialog">
+    <button id="closeDialog" class="close">✕</button>
+    <div id="movieDetails"></div>
+  </dialog>
+
+  <script>
+    // ================= JAVASCRIPT =================
+
+    const movies = [
+      {
+        id: 1,
+        title: "Мальчик в полосатой пижаме",
+        year: 2008,
+        genre: "Драма",
+        poster: "pijama.jpg", // ВАША КАРТИНКА
+        description: "История дружбы двух мальчиков во время Второй мировой войны.",
+        link: "https://www.kinopoisk.ru/film/281251/"
+      },
+      {
+        id: 2,
+        title: "Батальон",
+        year: 2015,
+        genre: "Драма",
+        poster: "batalion.jpg", // ВАША КАРТИНКА
+        description: "Военная драма о женском батальоне времён Первой мировой войны.",
+        link: "https://www.google.com/search?q=Батальонъ+2015+фильм"
+      },
+      {
+        id: 3,
+        title: "Шоу Трумана",
+        year: 1998,
+        genre: "Комедия",
+        poster: "https://image.tmdb.org/t/p/w500/vuza0WqY239yBXOadKlGwJsZJFE.jpg",
+        description: "Мужчина начинает сомневаться в реальности своего привычного мира.",
+        link: "https://www.paramount.com/movies/the-truman-show"
+      },
+      {
+        id: 4,
+        title: "Субстанция",
+        year: 2024,
+        genre: "Триллер",
+        poster: "https://image.tmdb.org/t/p/w500/evKz85EKouVbIr51zy5fOtpNRPg.jpg",
+        description: "Фантастический триллер о славе, внешности и цене совершенства.",
+        link: "https://www.google.com/search?q=Субстанция+2024+фильм"
+      },
+      {
+        id: 5,
+        title: "Менталист",
+        year: 2008,
+        genre: "Сериал",
+        poster: "mentalist.jpg", // ВАША КАРТИНКА
+        description: "Криминальный сериал о консультанте, помогающем раскрывать преступления.",
+        link: "https://www.google.com/search?q=Менталист+сериал"
+      },
+      {
+        id: 6,
+        title: "Ты тот, кого я люблю",
+        year: 2026,
+        genre: "Сериал",
+        poster: "love.jpg", // ВАША КАРТИНКА
+        description: "Романтическая история о любви и сложном выборе.",
+        link: "https://www.google.com/search?q=Ты+тот+кого+я+люблю+сериал"
+      }
+    ];
+
+    const movieList = document.getElementById("movieList");
+    const search = document.getElementById("search");
+    const emptyMessage = document.getElementById("emptyMessage");
+    const dialog = document.getElementById("movieDialog");
+    const movieDetails = document.getElementById("movieDetails");
+
+    let activeGenre = "Все";
+    let selectedSeats = [];
+    const occupiedSeats = [3, 7, 12, 18, 25, 31, 42, 50];
+
+    function renderMovies() {
+      const query = search.value.trim().toLowerCase();
+
+      const filtered = movies.filter(movie =>
+        movie.title.toLowerCase().includes(query) &&
+        (activeGenre === "Все" || movie.genre === activeGenre)
+      );
+
+      movieList.innerHTML = filtered.map(movie => `
+        <article class="movie-card">
+          <img
+            class="movie-poster"
+            src="${movie.poster}"
+            alt="${movie.title}"
+            loading="lazy"
+            onerror="this.onerror=null;this.src='https://placehold.co/500x750/24203a/ffffff?text=KINOTIME';"
+          >
+
+          <div class="movie-info">
+            <h3>${movie.title}</h3>
+            <div class="movie-meta">${movie.year} · ${movie.genre}</div>
+            <p class="movie-description">${movie.description}</p>
+
+            <div class="card-actions">
+              <button class="details-btn" onclick="openMovie(${movie.id})">
+                Подробнее
+              </button>
+              <button class="book-btn" onclick="bookMovie(${movie.id})">
+                Выбрать билет
+              </button>
+            </div>
+          </div>
+        </article>
+      `).join("");
+
+      emptyMessage.classList.toggle("hidden", filtered.length > 0);
+    }
+
+    function openMovie(id) {
+      const movie = movies.find(item => item.id === id);
+
+      movieDetails.innerHTML = `
+        <img class="detail-poster"
+          src="${movie.poster}"
+          alt="${movie.title}"
+          onerror="this.onerror=null;this.src='https://placehold.co/500x750/24203a/ffffff?text=KINOTIME';">
+
+        <h2>${movie.title}</h2>
+        <p>${movie.year} · ${movie.genre}</p>
+        <p>${movie.description}</p>
+
+        <a class="external-link"
+          href="${movie.link}"
+          target="_blank"
+          rel="noopener noreferrer">
+          Страница фильма ↗
+        </a>
+
+        <button class="main-btn wide btn"
+          style="margin-top:20px; width: 100%;"
+          onclick="bookMovie(${movie.id})">
+          Выбрать билет
+        </button>
+      `;
+
+      dialog.showModal();
+    }
+
+    document.getElementById("closeDialog").addEventListener("click", () => {
+      dialog.close();
+    });
+
+    dialog.addEventListener("click", event => {
+      if (event.target === dialog) dialog.close();
+    });
+
+    function bookMovie(id) {
+      const movie = movies.find(item => item.id === id);
+      dialog.close();
+
+      // Меняем заголовок в блоке бронирования
+      document.querySelector(".booking h2").textContent = `🎟 Билеты: ${movie.title}`;
+      
+      // Обновляем текст-подсказку
+      document.getElementById("selectedMovie").textContent = `Выбран фильм: ${movie.title}`;
+
+      document.getElementById("booking").scrollIntoView({
+        behavior: "smooth"
+      });
+
+      document.getElementById("ticket").classList.add("hidden");
+    }
+
+    document.querySelectorAll(".filter").forEach(button => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".filter").forEach(item =>
+          item.classList.remove("active")
+        );
+
+        button.classList.add("active");
+        activeGenre = button.dataset.genre;
+        renderMovies();
+      });
+    });
+
+    search.addEventListener("input", renderMovies);
+
+    // --- ЛОГИКА ДЛЯ МЕСТ ---
+    const seatsContainer = document.getElementById("seats");
+
+    // Очищаем контейнер перед генерацией, чтобы избежать дубликатов
+    seatsContainer.innerHTML = '';
+
+    for (let i = 1; i <= 64; i++) {
+      const seat = document.createElement("button");
+      seat.className = "seat";
+      seat.textContent = i;
+      seat.type = "button";
+
+      if (occupiedSeats.includes(i)) {
+        seat.classList.add("occupied");
+        seat.disabled = true;
+      }
+
+      seat.addEventListener("click", () => {
+        if (selectedSeats.includes(i)) {
+          selectedSeats = selectedSeats.filter(n => n !== i);
+          seat.classList.remove("selected");
+        } else {
+          selectedSeats.push(i);
+          seat.classList.add("selected");
+        }
+
+        updateTotal();
+      });
+
+      seatsContainer.appendChild(seat);
+    }
+
+    function updateTotal() {
+      document.getElementById("seatCount").textContent = selectedSeats.length;
+      document.getElementById("totalPrice").textContent = selectedSeats.length * 160;
+    }
+
+    document.getElementById("buyButton").addEventListener("click", () => {
+      if (selectedSeats.length === 0) {
+        alert("Сначала выбери свободное место!");
+        return;
+      }
+
+      const cinema = document.getElementById("cinema").value;
+      const session = document.getElementById("session").value;
+      
+      // Получаем название фильма из заголовка
+      let title = document.querySelector(".booking h2").textContent.replace("🎟 Билеты: ", "");
+      if (title === "🎟 Бронирование билета") {
+        title = "Не выбран";
+      }
+
+      const ticket = document.getElementById("ticket");
+
+      ticket.innerHTML = `
+        <h3>🎫 ТВОЙ ЭЛЕКТРОННЫЙ БИЛЕТ</h3>
+        <p><b>Фильм:</b> ${title}</p>
+        <p><b>Кинотеатр:</b> ${cinema}</p>
+        <p><b>Время:</b> ${session}</p>
+        <p><b>Места:</b> ${selectedSeats.join(", ")}</p>
+        <p><b>Стоимость:</b> ${selectedSeats.length * 160} сом</p>
+        <p>Демонстрационный билет — оплата не производится.</p>
+      `;
+
+      ticket.classList.remove("hidden");
+    });
+
+    // Запуск отрисовки фильмов при загрузке
+    renderMovies();
+  </script>
+</body>
+</html>
